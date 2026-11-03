@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>Blurry Classifier</title></head>
+<body>
+  <h2>Blurry or Clear?</h2>
+  <input type="file" id="file" accept="image/*">
+  <br><img id="img" width="224"><div id="result"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.3/dist/teachablemachine-image.min.js"></script>
+  <script>
+    let model;
+    tmImage.load("./model/model.json", "./model/metadata.json").then(m => model = m);
+
+    document.getElementById("file").onchange = e => {
+      const img = document.getElementById("img");
+      img.src = URL.createObjectURL(e.target.files[0]);
+      img.onload = async () => {
+        const preds = await model.predict(img);
+        document.getElementById("result").innerHTML =
+          preds.map(p => `${p.className}: ${(p.probability * 100).toFixed(1)}%`).join("<br>");
+      };
+    };
+  </script>
+</body>
+</html>
